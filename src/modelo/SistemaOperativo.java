@@ -3,7 +3,7 @@ package modelo;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class SistemaOperativo implements Observer {
+public class SistemaOperativo extends Observable implements Observer {
     private List<ProcesoTiempoEjecucion> procesosSistema;
     private List<Integer> nuevos;
     private List<Integer> listos;
@@ -11,8 +11,8 @@ public class SistemaOperativo implements Observer {
     private List<Bloqueo> bloqueados;
     private List<RecursoTiempoEjecucion> recursos;
     private Long tiempoCPUOcupado;
-    private final Long tiempoEnCpu = Long.valueOf(10);
-    private final Long tiempoEnBloqueado = Long.valueOf(10);
+    private final Long tiempoEnCpu = Long.valueOf(10000);
+    private final Long tiempoEnBloqueado = Long.valueOf(10000);
     Thread hiloCpu;
 
     public SistemaOperativo(Recurso... recursos) {
@@ -29,8 +29,9 @@ public class SistemaOperativo implements Observer {
         this.procesosSistema = new ArrayList<>();
         this.cpu = new CPU(tiempoEnCpu);
         cpu.addObserver(this);
+        this.addObserver(this.cpu);
         this.hiloCpu = new Thread(this.cpu, "Cpu");
-        hiloCpu.start();
+
     }
 
     public void agregarRecurso(Recurso recurso) {
@@ -115,6 +116,8 @@ public class SistemaOperativo implements Observer {
 
     public void run() {
         System.out.println("Metodo run del sistema operativo");
+        hiloCpu.start();
+        hiloCpu.suspend();
             while (this.procesosSistema.stream().filter(proceso -> proceso.getEstado() == Estado.TERMINADO).count() < this.procesosSistema.size()){
 
                 this.procesosSistema.stream().filter(proceso -> proceso.getEstado() == Estado.NUEVO).forEach(proceso -> {
@@ -127,8 +130,11 @@ public class SistemaOperativo implements Observer {
                         System.out.println("El proceso " + proceso.getProceso().getNombre() + " entro en ejecucion");
                         proceso.setEstado(Estado.EJECUCION);
                         System.out.println("El id del proceso en cpu es  " + this.cpu.getIdProcesoEjecucion());
-                        this.cpu.setIdProcesoEjecucion(proceso.getProceso().getId());
-                        System.out.println("El id del proceso en cpu es  " + this.cpu.getIdProcesoEjecucion());
+                        //this.cpu.setIdProcesoEjecucion(proceso.getProceso().getId());
+                        this.setChanged();
+                        this.notifyObservers(proceso.getProceso().getId());
+                        this.hiloCpu.resume();
+                        System.out.println("La memoria de la cpu es " + this.cpu);
                         this.listos.remove(proceso.getProceso().getId());
                     } else {
                         System.out.println("El proceso " + proceso + " entro se bloqueo");
@@ -171,7 +177,7 @@ public class SistemaOperativo implements Observer {
                     procesoTiempoEjecucion.aniadirTiempoSistema(this.tiempoEnCpu);
                     this.quitarRecursos(id);
                 }
-
+                this.hiloCpu.suspend();
                 this.cpu.setIdProcesoEjecucion(0);
                 System.out.println("Salido de ejecucion " + procesoTiempoEjecucion.getProceso().getNombre());
                 break;
