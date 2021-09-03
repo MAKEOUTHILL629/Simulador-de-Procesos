@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="448.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controlador.AgregarRecurso">
+   <children>
+      <VBox prefHeight="400.0" prefWidth="447.0">
+         <children>
+            <Pane prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <Label layoutX="134.0" layoutY="32.0" text="Crear Recurso" textFill="#122c34">
+                     <font>
+                        <Font name="Candara Bold" size="30.0" />
+                     </font>
+                  </Label>
+               </children>
+            </Pane>
+            <Pane prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <TextField fx:id="field_nombre" layoutX="112.0" layoutY="31.0" promptText="Nombre" style="-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </TextField>
+               </children>
+            </Pane>
+            <Pane prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <TextField fx:id="field_tipo" layoutX="112.0" layoutY="31.0" promptText="Tipo" style="-fx-background-radius: 8 8 8 8; -fx-border-radius: 8 8 8 8;">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </TextField>
+               </children>
+            </Pane>
+            <Pane prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <Button fx:id="boton_guardar" layoutX="104.0" layoutY="38.0" mnemonicParsing="false" onAction="#guardarRecurso" style="-fx-background-color: #4A8FE7;" text="Guardar" textFill="WHITE">
+                     <font>
+                        <Font name="Candara" size="16.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="boton_Salir" layoutX="305.0" layoutY="38.0" mnemonicParsing="false" onAction="#salir" style="-fx-background-color: #E26D5C;" text="Salir" textFill="WHITE">
+                     <font>
+                        <Font name="Candara Bold" size="16.0" />
+                     </font>
+                  </Button>
+               </children>
+            </Pane>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
