@@ -41,22 +41,22 @@ public class ProcesoTiempoEjecucion {
         this.tiempoEnElSistema = tiempoEnElSistema;
     }
 
-    public void descontarTiempoSistema(Long tiempoCPU){
-        this.tiempoEnElSistema -= tiempoCPU;
+    public void descontarTiempoSistema(Long tiempoCPU) {
+        this.tamanio -= tiempoCPU;
     }
 
-    public void aniadirTiempoSistema(Long tiempoEnElSistema){
+    public void aniadirTiempoSistema(Long tiempoEnElSistema) {
         this.tiempoEnElSistema += tiempoEnElSistema;
     }
 
     @Override
     public String toString() {
-        return "ProcesoTiempoEjecucion{" +
-                "proceso=" + proceso +
-                ", estado=" + estado +
-                ", tamanio=" + tamanio +
-                ", tiempoEnElSistema=" + tiempoEnElSistema +
-                '}';
+        return " ProcesoTiempoEjecucion { " +
+                " proceso = " + proceso.getNombre() +
+                ", estado = " + estado +
+                ", tamanio = " + tamanio +
+                ", tiempoEnElSistema = " + tiempoEnElSistema +
+                " } ";
     }
 }
 

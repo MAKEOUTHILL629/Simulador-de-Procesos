@@ -1,5 +1,6 @@
 package modelo;
 
+import java.util.Objects;
 import java.util.Observable;
 
 public class Bloqueo extends Observable implements Runnable {
@@ -11,6 +12,7 @@ public class Bloqueo extends Observable implements Runnable {
         this.procesoTiempoEjecucion = procesoTiempoEjecucion;
         this.tiempoEnBloqueado = tiempoEnBloqueado;
     }
+
 
     public int getProcesoTiempoEjecucion() {
         return procesoTiempoEjecucion;
@@ -30,11 +32,33 @@ public class Bloqueo extends Observable implements Runnable {
             while (!parar) {
                 Thread.sleep(tiempoEnBloqueado);
                 setChanged();
-                notifyObservers(procesoTiempoEjecucion);
+                notifyObservers(this.procesoTiempoEjecucion);
+                parar = true;
             }
         } catch (InterruptedException e) {
             System.out.println("Por alguna razon el bloque no funciona");
             Thread.currentThread().interrupt();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Bloqueo bloqueo = (Bloqueo) o;
+        return procesoTiempoEjecucion == bloqueo.procesoTiempoEjecucion;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(procesoTiempoEjecucion, tiempoEnBloqueado, parar);
+    }
+
+    @Override
+    public String toString() {
+        return "Bloqueo { " +
+                " procesoTiempoEjecucion = " + procesoTiempoEjecucion +
+                ", tiempoEnBloqueado = " + tiempoEnBloqueado +
+                " } ";
     }
 }

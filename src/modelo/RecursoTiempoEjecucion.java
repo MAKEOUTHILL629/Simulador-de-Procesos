@@ -19,4 +19,12 @@ public class RecursoTiempoEjecucion extends Recurso {
     public void setIdProcesoEjecucion(int idProcesoEjecucion) {
         this.idProcesoEjecucion = idProcesoEjecucion;
     }
+
+    @Override
+    public String toString() {
+        return " RecursoTiempoEjecucion { " +
+                " recurso =  " + this.getNombre() +
+                " idProceso =" + idProcesoEjecucion +
+                " } " ;
+    }
 }
