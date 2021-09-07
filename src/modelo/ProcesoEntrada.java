@@ -1,6 +1,5 @@
 package modelo;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProcesoEntrada {
@@ -17,6 +16,19 @@ public class ProcesoEntrada {
         this.tamanio = tamanio;
         this.privilegios = privilegios;
         this.cantidadHilos = cantidadHilos;
+        this.recursosNecesitados = recursosNecesitados;
+    }
+
+    public ProcesoEntrada(int id, String nombre, long tamanio, List<Recurso> recursosNecesitados) {
+        this.id = id;
+        this.nombre = nombre;
+        this.tamanio = tamanio;
+        this.recursosNecesitados = recursosNecesitados;
+    }
+
+    public ProcesoEntrada(String nombre, long tamanio, List<Recurso> recursosNecesitados) {
+        this.nombre = nombre;
+        this.tamanio = tamanio;
         this.recursosNecesitados = recursosNecesitados;
     }
 

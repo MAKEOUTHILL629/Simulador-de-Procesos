@@ -11,9 +11,9 @@ public class SistemaOperativo extends Observable implements Observer {
     private List<Bloqueo> bloqueados;
     private List<RecursoTiempoEjecucion> recursos;
     private Long tiempoCPUOcupado;
-    private final Long tiempoEnCpu = Long.valueOf(10);
-    private final Long tiempoEnBloqueado = Long.valueOf(10);
-    Thread hiloCpu;
+    private final Long tiempoEnCpu = Long.valueOf(3);
+    private final Long tiempoEnBloqueado = Long.valueOf(3);
+    private Thread hiloCpu;
 
     public List<ProcesoTiempoEjecucion> getProcesosSistema() {
         return procesosSistema;
@@ -35,6 +35,7 @@ public class SistemaOperativo extends Observable implements Observer {
         this.listos = new ArrayList<>();
         this.bloqueados = new ArrayList<>();
         this.procesosSistema = new ArrayList<>();
+
         this.cpu = new CPU(tiempoEnCpu);
         cpu.addObserver(this);
         this.hiloCpu = new Thread(this.cpu, "Cpu");
@@ -47,8 +48,10 @@ public class SistemaOperativo extends Observable implements Observer {
     }
 
     public ProcesoTiempoEjecucion obtenerProceso(int id) {
-
-        return this.procesosSistema.stream().filter(proceso -> proceso.getProceso().getId() == id).findAny().orElseGet(() -> new ProcesoTiempoEjecucion(new ProcesoEntrada(0, "no existe", 0)));
+        return this.procesosSistema.stream()
+                .filter(proceso -> proceso.getProceso().getId() == id)
+                .findAny()
+                .orElseGet(() -> new ProcesoTiempoEjecucion(new ProcesoEntrada(0, "no existe", 0)));
     }
 
     public void crearProceso(ProcesoEntrada procesoEntrada) {
@@ -60,13 +63,17 @@ public class SistemaOperativo extends Observable implements Observer {
 
     private void agregarNuevoProceso(int id) {
         ProcesoTiempoEjecucion proceso = this.obtenerProceso(id);
+
         proceso.setEstado(Estado.LISTO);
+
         this.listos.add(proceso.getProceso().getId());
     }
 
     private boolean asignarRecursosAlProceso(int idProceso) {
         ProcesoTiempoEjecucion procesoTiempoEjecucion = this.obtenerProceso(idProceso);
+
         AtomicInteger contador = new AtomicInteger();
+
         procesoTiempoEjecucion.getProceso().getRecursosNecesitados().forEach(recurso -> {
             this.recursos.forEach(recursosSistema -> {
                 if (recurso.getId() == recursosSistema.getId() && recursosSistema.getIdProcesoEjecucion() == 0) {
@@ -77,7 +84,6 @@ public class SistemaOperativo extends Observable implements Observer {
         });
 
         if (contador.get() == procesoTiempoEjecucion.getProceso().getRecursosNecesitados().size()) {
-
             return true;
         } else {
             this.recursos.stream()
@@ -98,11 +104,11 @@ public class SistemaOperativo extends Observable implements Observer {
     }
 
     private void quitarRecursos(int idProceso) {
+
         this.recursos.forEach(recursoTiempoEjecucion -> {
             if (recursoTiempoEjecucion.getIdProcesoEjecucion() == idProceso) {
                 if (this.correrRandom()) {
                     recursoTiempoEjecucion.setIdProcesoEjecucion(0);
-
                 }
             }
         });
@@ -119,11 +125,14 @@ public class SistemaOperativo extends Observable implements Observer {
         }
     }
 
+    public boolean terminaronLosProcesos(){
+        return this.procesosSistema.stream().filter(proceso -> proceso.getEstado() == Estado.TERMINADO).count() < this.procesosSistema.size();
+    }
 
     public void run() {
 
 
-        while (this.procesosSistema.stream().filter(proceso -> proceso.getEstado() == Estado.TERMINADO).count() <= this.procesosSistema.size()) {
+        while (terminaronLosProcesos()){
 
             this.procesosSistema.stream().filter(proceso -> proceso.getEstado() == Estado.NUEVO).forEach(proceso -> {
 
@@ -145,18 +154,18 @@ public class SistemaOperativo extends Observable implements Observer {
                     System.out.println();
                     System.out.println("Lista de procesos : \n " + this.procesosSistema);
                     System.out.println();
-                    System.out.println("Lista de procesos nuevos: \n " + this.nuevos);
-                    System.out.println();
-                    System.out.println();
-                    System.out.println("Lista de procesos listos: \n " + this.listos);
-                    System.out.println();
-                    System.out.println();
-                    System.out.println("Procesos CPU: \n " + this.cpu.getIdProcesoEjecucion());
-                    System.out.println();
-                    System.out.println();
-                    System.out.println("Lista de bloqueos CPU: \n " + this.bloqueados.toString());
-                    System.out.println();
-                    System.out.println();
+//                    System.out.println("Lista de procesos nuevos: \n " + this.nuevos);
+//                    System.out.println();
+//                    System.out.println();
+//                    System.out.println("Lista de procesos listos: \n " + this.listos);
+//                    System.out.println();
+//                    System.out.println();
+//                    System.out.println("Procesos CPU: \n " + this.cpu.getIdProcesoEjecucion());
+//                    System.out.println();
+//                    System.out.println();
+//                    System.out.println("Lista de bloqueos CPU: \n " + this.bloqueados.toString());
+//                    System.out.println();
+//                    System.out.println();
 
 
                     if (this.asignarRecursosAlProceso(proceso.getProceso().getId())) {
@@ -203,15 +212,20 @@ public class SistemaOperativo extends Observable implements Observer {
                 if (procesoTiempoEjecucion.getTamanio() < 1) {
                     procesoTiempoEjecucion.setEstado(Estado.TERMINADO);
                     this.quitarTodosLosRecursos(id);
+                    System.out.println("Se termino de ejecutar el proceso "+ id);
                 } else {
+                    System.out.println("Ingreso en la validacion de que no termino el proceso " + id);
                     procesoTiempoEjecucion.descontarTiempoSistema(this.tiempoEnCpu);
                     procesoTiempoEjecucion.aniadirTiempoSistema(this.tiempoEnCpu);
                     if (procesoTiempoEjecucion.getTamanio() > 0) {
                         procesoTiempoEjecucion.setEstado(Estado.LISTO);
                         this.quitarRecursos(id);
+                        System.out.println("El proceso "+ id + " No termino por lo tanto pasa a cola");
                     } else {
                         procesoTiempoEjecucion.setEstado(Estado.TERMINADO);
                         this.quitarTodosLosRecursos(id);
+                        System.out.println("El proceso termino en esta ultima ejecucion " + id);
+                        this.cpu.setIdProcesoEjecucion(0);
                     }
 
                 }
@@ -223,6 +237,8 @@ public class SistemaOperativo extends Observable implements Observer {
 
         }
 
+        this.setChanged();
+        this.notifyObservers();
     }
 
 }

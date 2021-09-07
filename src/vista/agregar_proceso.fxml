@@ -32,7 +32,7 @@
             <Pane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="3">
                <children>
                   <ComboBox fx:id="combo_recursos" layoutX="42.0" layoutY="21.0" prefHeight="39.0" prefWidth="150.0" promptText="Recursos" style="-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8; -fx-font-family: Candara; -fx-font-size: 16; -fx-background-color: #F4F4F9; -fx-border-color: #a2a2a2;" />
-                  <Button fx:id="boton_agregar_recurso" layoutX="200.0" layoutY="27.0" mnemonicParsing="false" style="-fx-background-color: #57B8FF;" text="Agregar" textFill="#f8f4f4">
+                  <Button fx:id="boton_agregar_recurso" layoutX="200.0" layoutY="27.0" mnemonicParsing="false" onAction="#agregarRecursoNecesitado" style="-fx-background-color: #57B8FF;" text="Agregar" textFill="#f8f4f4">
                      <font>
                         <Font name="Candara Bold" size="14.0" />
                      </font>

@@ -1,7 +1,7 @@
 package modelo;
 
 import java.util.Observable;
-import java.util.Observer;
+
 
 public class CPU extends Observable implements Runnable {
     private int idProcesoEjecucion;
@@ -42,7 +42,7 @@ public class CPU extends Observable implements Runnable {
 
         try{
             while(!parar){
-                this.idProcesoEjecucion = this.getIdProcesoEjecucion();
+               // this.idProcesoEjecucion = this.getIdProcesoEjecucion();
                 if(this.idProcesoEjecucion != 0){
                     System.out.println("El proceso " + this.getIdProcesoEjecucion() + " esta pasando por cpu");
                     Thread.sleep(tiempoEnCPU);
