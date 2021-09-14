@@ -15,13 +15,13 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modelo.*;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
@@ -55,7 +55,8 @@ public class MenuPrincipal implements Initializable, Observer {
     public TableColumn<RecursoTiempoEjecucion, String> col_estado_recursos;
     private SistemaOperativo sistemaOperativo;
 
-    private ObservableList<ProcesoTiempoEjecucion> procesosDelSistema;
+    private List<ProcesoTiempoEjecucion> procesosDelSistema;
+
     private ObservableList<ProcesoTiempoEjecucion> procesosNuevos;
     private ObservableList<ProcesoTiempoEjecucion> procesosListos;
     private ObservableList<ProcesoTiempoEjecucion> procesosBloqueos;
@@ -68,14 +69,15 @@ public class MenuPrincipal implements Initializable, Observer {
     public void initialize(URL location, ResourceBundle resources) {
         this.sistemaOperativo = new SistemaOperativo();
         this.sistemaOperativo.addObserver(this);
-        this.procesosDelSistema = FXCollections.observableArrayList(this.sistemaOperativo.getProcesosSistema());
+
+        this.procesosDelSistema = this.sistemaOperativo.getProcesosSistema();
         this.recursosDelSistema = FXCollections.observableArrayList(this.sistemaOperativo.getRecursos());
 
-        this.procesosNuevos = FXCollections.observableArrayList(this.sistemaOperativo.getProcesosSistema().stream().filter(proceso -> proceso.getEstado() == Estado.NUEVO).collect(Collectors.toList()));
-        this.procesosBloqueos = FXCollections.observableArrayList(this.sistemaOperativo.getProcesosSistema().stream().filter(proceso -> proceso.getEstado() == Estado.BLOQUEADO).collect(Collectors.toList()));
-        this.procesosListos = FXCollections.observableArrayList(this.sistemaOperativo.getProcesosSistema().stream().filter(proceso -> proceso.getEstado() == Estado.LISTO).collect(Collectors.toList()));
-        this.procesosTerminados = FXCollections.observableArrayList(this.sistemaOperativo.getProcesosSistema().stream().filter(proceso -> proceso.getEstado() == Estado.TERMINADO).collect(Collectors.toList()));
-        this.procesosEjecucion = FXCollections.observableArrayList(this.sistemaOperativo.getProcesosSistema().stream().filter(proceso -> proceso.getEstado() == Estado.EJECUCION).collect(Collectors.toList()));
+        this.procesosNuevos = FXCollections.observableArrayList(this.sistemaOperativo.obtenerProcesosEstadoNuevo());
+        this.procesosBloqueos = FXCollections.observableArrayList(this.sistemaOperativo.obtenerProcesosEstadoBloqueado());
+        this.procesosListos = FXCollections.observableArrayList(this.sistemaOperativo.obtenerProcesosEstadoListo());
+        this.procesosTerminados = FXCollections.observableArrayList(this.sistemaOperativo.obtenerProcesosEstadoTerminado());
+        this.procesosEjecucion = FXCollections.observableArrayList(this.sistemaOperativo.obtenerProcesosEstadoEjecucion());
 
         this.tabla_procesos_nuevos.setItems(this.procesosNuevos);
         this.tabla_procesos_listos.setItems(this.procesosListos);
@@ -83,6 +85,8 @@ public class MenuPrincipal implements Initializable, Observer {
         this.tabla_proceso_ejecucion.setItems(this.procesosEjecucion);
         this.tabla_procesos_terminados.setItems(this.procesosTerminados);
         this.tabla_recursos.setItems(this.recursosDelSistema);
+
+        //Asignando las variables a cada columna
 
         this.col_estado_recursos.setCellValueFactory(data -> new ObservableValueBase<String>() {
             @Override
@@ -228,7 +232,7 @@ public class MenuPrincipal implements Initializable, Observer {
             Parent root = loader.load();//Esta cargando el padre
 
             AgregarProceso agregarProcesoControlador = loader.getController();
-            agregarProcesoControlador.initAtributtes(this.recursosDelSistema, this.procesosDelSistema);//inicializando los atributos
+            agregarProcesoControlador.initAtributtes(this.recursosDelSistema, FXCollections.observableArrayList(this.procesosDelSistema) );//inicializando los atributos
             Scene scene = new Scene(root);
             Stage stage = new Stage();
 
@@ -269,7 +273,7 @@ public class MenuPrincipal implements Initializable, Observer {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText(null);
             alert.setTitle("Error");
-            alert.setContentText("Por favor ingrese los procesos");
+            alert.setContentText("Por favor ingrese los recursos");
             alert.showAndWait();
 
         } else {
@@ -280,45 +284,22 @@ public class MenuPrincipal implements Initializable, Observer {
         }
     }
 
-    private void actualizarTablas() {
-//        this.procesosDelSistema.addAll(this.sistemaOperativo.getProcesosSistema());
-//        if (!this.procesosNuevos.isEmpty()) {
-//            this.tabla_procesos_nuevos.getItems().clear();
-//            this.procesosNuevos.addAll(this.procesosDelSistema.filtered(p -> p.getEstado() == Estado.NUEVO));
-//            this.tabla_procesos_nuevos.refresh();
-//        }
-//        if (!this.procesosEjecucion.isEmpty()) {
-//            this.tabla_proceso_ejecucion.getItems().clear();
-//            this.procesosEjecucion.addAll(this.procesosDelSistema.filtered(p -> p.getEstado() == Estado.EJECUCION));
-//            this.tabla_proceso_ejecucion.refresh();
-//        }
-//        if (!this.procesosListos.isEmpty()) {
-//            this.tabla_procesos_listos.getItems().clear();
-//            this.procesosListos.addAll(this.procesosDelSistema.filtered(p -> p.getEstado() == Estado.LISTO));
-//            this.tabla_procesos_listos.refresh();
-//        }
-//        if (!this.procesosTerminados.isEmpty()) {
-//            this.tabla_procesos_terminados.getItems().clear();
-//            this.procesosTerminados.addAll(this.procesosDelSistema.filtered(p -> p.getEstado() == Estado.TERMINADO));
-//            this.tabla_procesos_terminados.refresh();
-//        }
-//        if (!this.procesosBloqueos.isEmpty()) {
-//            this.tabla_procesos_bloqueados.getItems().clear();
-//            this.procesosBloqueos.addAll(this.procesosDelSistema.filtered(p -> p.getEstado() == Estado.BLOQUEADO));
-//            this.tabla_procesos_bloqueados.refresh();
-//        }
-//
-//        this.tabla_recursos.getItems().clear();
-//        this.recursosDelSistema = FXCollections.observableArrayList(this.sistemaOperativo.getRecursos());
-//        System.out.println("Llego la actualizacion");
-////        this.procesosNuevos.addAll(this.sistemaOperativo.getProcesosSistema().stream().filter(proceso -> proceso.getEstado() == Estado.NUEVO).collect(Collectors.toList()));
-////        this.procesosListos.addAll(this.sistemaOperativo.getProcesosSistema().stream().filter(proceso -> proceso.getEstado() == Estado.LISTO).collect(Collectors.toList()));
-////        this.procesosEjecucion.addAll(this.sistemaOperativo.getProcesosSistema().stream().filter(proceso -> proceso.getEstado() == Estado.EJECUCION).collect(Collectors.toList()));
-////        this.procesosBloqueos.addAll(this.sistemaOperativo.getProcesosSistema().stream().filter(proceso -> proceso.getEstado() == Estado.BLOQUEADO).collect(Collectors.toList()));
-////        this.procesosTerminados.addAll(this.sistemaOperativo.getProcesosSistema().stream().filter(proceso -> proceso.getEstado() == Estado.TERMINADO).collect(Collectors.toList()));
-//
-//
-//        System.out.println("se actualizaron las tablas");
+    private void actualizarTablas()  {
+        this.tabla_procesos_nuevos.getItems().clear();
+        this.tabla_procesos_listos.getItems().clear();
+        this.tabla_procesos_bloqueados.getItems().clear();
+        this.tabla_proceso_ejecucion.getItems().clear();
+        this.tabla_procesos_terminados.getItems().clear();
+
+
+
+            System.out.println("Se estan actualizando las tablas");
+            this.tabla_procesos_nuevos.getItems().addAll(this.sistemaOperativo.obtenerProcesosEstadoNuevo());
+            this.tabla_procesos_listos.getItems().addAll(this.sistemaOperativo.obtenerProcesosEstadoListo());
+            this.tabla_procesos_bloqueados.getItems().addAll(this.sistemaOperativo.obtenerProcesosEstadoBloqueado());
+            this.tabla_proceso_ejecucion.getItems().addAll(this.sistemaOperativo.obtenerProcesosEstadoEjecucion());
+            this.tabla_procesos_terminados.getItems().addAll(this.sistemaOperativo.obtenerProcesosEstadoTerminado());
+            System.out.println("Se actualizaron las tablas");
 
     }
 

@@ -2,6 +2,7 @@ package modelo;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class SistemaOperativo extends Observable implements Observer {
     private List<ProcesoTiempoEjecucion> procesosSistema;
@@ -36,7 +37,7 @@ public class SistemaOperativo extends Observable implements Observer {
         this.bloqueados = new ArrayList<>();
         this.procesosSistema = new ArrayList<>();
 
-        this.cpu = new CPU(tiempoEnCpu);
+        this.cpu = new CPU(tiempoEnCpu * 1000);
         cpu.addObserver(this);
         this.hiloCpu = new Thread(this.cpu, "Cpu");
         hiloCpu.start();
@@ -129,6 +130,26 @@ public class SistemaOperativo extends Observable implements Observer {
         return this.procesosSistema.stream().filter(proceso -> proceso.getEstado() == Estado.TERMINADO).count() < this.procesosSistema.size();
     }
 
+
+    public List<ProcesoTiempoEjecucion> obtenerProcesosEstadoNuevo(){
+        return this.procesosSistema.stream().filter(proceso -> proceso.getEstado() == Estado.NUEVO).collect(Collectors.toList());
+    }
+
+    public List<ProcesoTiempoEjecucion> obtenerProcesosEstadoListo(){
+        return this.procesosSistema.stream().filter(proceso -> proceso.getEstado() == Estado.LISTO).collect(Collectors.toList());
+    }
+    public List<ProcesoTiempoEjecucion> obtenerProcesosEstadoEjecucion(){
+        return this.procesosSistema.stream().filter(proceso -> proceso.getEstado() == Estado.EJECUCION).collect(Collectors.toList());
+    }
+    public List<ProcesoTiempoEjecucion> obtenerProcesosEstadoTerminado(){
+        return this.procesosSistema.stream().filter(proceso -> proceso.getEstado() == Estado.TERMINADO).collect(Collectors.toList());
+    }
+
+    public List<ProcesoTiempoEjecucion> obtenerProcesosEstadoBloqueado(){
+        return this.procesosSistema.stream().filter(proceso -> proceso.getEstado() == Estado.BLOQUEADO).collect(Collectors.toList());
+    }
+
+
     public void run() {
 
 
@@ -150,10 +171,7 @@ public class SistemaOperativo extends Observable implements Observer {
                 if (this.listos.size() > 0) {
                     //ProcesoTiempoEjecucion proceso = this.procesosSistema.stream().filter(procesoEncontrar -> procesoEncontrar.getEstado() == Estado.LISTO).findFirst().get();
                     ProcesoTiempoEjecucion proceso = this.obtenerProceso(this.listos.stream().findFirst().orElseGet(() -> 0));
-                    System.out.println();
-                    System.out.println();
-                    System.out.println("Lista de procesos : \n " + this.procesosSistema);
-                    System.out.println();
+
 //                    System.out.println("Lista de procesos nuevos: \n " + this.nuevos);
 //                    System.out.println();
 //                    System.out.println();
@@ -177,7 +195,7 @@ public class SistemaOperativo extends Observable implements Observer {
                     } else {
 
                         proceso.setEstado(Estado.BLOQUEADO);
-                        Bloqueo procesoBloqueado = new Bloqueo(proceso.getProceso().getId(), this.tiempoEnBloqueado);
+                        Bloqueo procesoBloqueado = new Bloqueo(proceso.getProceso().getId(), this.tiempoEnBloqueado * 1000);
                         procesoBloqueado.addObserver(this);
                         Thread hiloBloque = new Thread(procesoBloqueado);
                         hiloBloque.start();
@@ -186,7 +204,13 @@ public class SistemaOperativo extends Observable implements Observer {
                         this.listos.remove(this.listos.indexOf(procesoBloqueado.getProcesoTiempoEjecucion()));
                     }
                 }
-
+                System.out.println();
+                System.out.println();
+                System.out.println("Lista de procesos : \n " + this.procesosSistema);
+                System.out.println("Lista de recursos : \n " + this.recursos);
+                System.out.println();
+                this.setChanged();
+                this.notifyObservers();
 
             }
         }
@@ -237,8 +261,7 @@ public class SistemaOperativo extends Observable implements Observer {
 
         }
 
-        this.setChanged();
-        this.notifyObservers();
+
     }
 
 }
