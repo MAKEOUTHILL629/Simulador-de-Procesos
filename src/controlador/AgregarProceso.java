@@ -15,6 +15,7 @@ import modelo.RecursoTiempoEjecucion;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.function.UnaryOperator;
 
 public class AgregarProceso implements Initializable {
     public TableView tabla_recursos_necesarios;
@@ -43,46 +44,64 @@ public class AgregarProceso implements Initializable {
 
         this.col_recursos_nombre.setCellValueFactory(new PropertyValueFactory("nombre"));
         this.col_tipo_recursos.setCellValueFactory(new PropertyValueFactory("tipo"));
+
+        UnaryOperator<TextFormatter.Change> filter = change -> {
+            String text = change.getText();
+
+            if (text.matches("[0-9]*")) {
+                return change;
+            }
+
+            return null;
+        };
+        TextFormatter<String> textFormatter = new TextFormatter<>(filter);
+
+        field_tamanio.setTextFormatter(textFormatter);
+
     }
 
     public void guardarProceso(ActionEvent actionEvent) {
-        acumulador++;
-        ProcesoEntrada procesoEntradaAux = new ProcesoEntrada(acumulador, this.field_nombre.getText(), Long.parseLong(this.field_tamanio.getText()), recursosNecesitados);
 
-        if (this.procesosEnElSistema.stream().filter(p -> p.getProceso().getNombre().equals(procesoEntradaAux.getNombre())).count() == 0) {
-            //modificicar
-            if (this.procesoEntrada != null) {
-                this.procesoEntrada.setId(acumulador);
-                this.procesoEntrada.setNombre(procesoEntradaAux.getNombre());
-                this.procesoEntrada.setRecursosNecesitados(this.recursosNecesitados);
-                this.procesoEntrada.setTamanio(procesoEntradaAux.getTamanio());
+        try{
+            ProcesoEntrada procesoEntradaAux = new ProcesoEntrada(acumulador, this.field_nombre.getText(), Long.parseLong(this.field_tamanio.getText()), recursosNecesitados);
 
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setHeaderText(null);
-                alert.setTitle("Informacion");
-                alert.setContentText("El proceso se modifico correctamente");
-                alert.showAndWait();
+            if (this.procesosEnElSistema.stream().filter(p -> p.getProceso().getNombre().equals(procesoEntradaAux.getNombre())).count() == 0) {
+                if(!procesoEntradaAux.getNombre().equals("") && procesoEntradaAux.getTamanio() > 0 && !this.recursosNecesitados.isEmpty()){
+                    //modificicar
+                    if (this.procesoEntrada != null) {
+                        this.procesoEntrada.setId(acumulador);
+                        this.procesoEntrada.setNombre(procesoEntradaAux.getNombre());
+                        this.procesoEntrada.setRecursosNecesitados(this.recursosNecesitados);
+                        this.procesoEntrada.setTamanio(procesoEntradaAux.getTamanio());
+
+
+                        Notificaciones.alertaInformacion("Informacion", "El proceso se modifico correctamente");
+
+                    } else {
+                        acumulador++;
+                        Notificaciones.alertaInformacion("Informacion", "El proceso se agrego correctamente");
+                        procesoEntradaAux.setId(acumulador);
+                        this.procesoEntrada = procesoEntradaAux;
+                    }
+
+                    Stage stage = (Stage) this.boton_guardar.getScene().getWindow();//para cerrar la ventana apenas se agrege la persona
+                    stage.close();
+                }else{
+                    Notificaciones.alertaError("Error", "Ingrese los datos necesarios para crear un recurso");
+                }
+
+
 
             } else {
-                this.procesoEntrada = procesoEntradaAux;
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setHeaderText(null);
-                alert.setTitle("Informacion");
-                alert.setContentText("El proceso se agrego correctamente");
-                alert.showAndWait();
+                Notificaciones.alertaError("Error", "El proceso existe");
+
+
             }
-
-
-            Stage stage = (Stage) this.boton_guardar.getScene().getWindow();//para cerrar la ventana apenas se agrege la persona
-            stage.close();
-        } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText(null);
-            alert.setTitle("Error");
-            alert.setContentText("El proceso existe");
-            alert.showAndWait();
-
+        }catch (Exception e){
+            Notificaciones.alertaError("Tamanio no permitido", "Ingrese un tamanio valido");
         }
+
+
     }
 
     public void initAtributtes(ObservableList<RecursoTiempoEjecucion> recursos, ObservableList<ProcesoTiempoEjecucion> procesosSistema) {
@@ -104,10 +123,16 @@ public class AgregarProceso implements Initializable {
     public void agregarRecursoNecesitado(ActionEvent actionEvent) {
         RecursoTiempoEjecucion recursoObtenido = (RecursoTiempoEjecucion) this.combo_recursos.getValue();
         Recurso recursoAgregado = new Recurso(recursoObtenido.getId(), recursoObtenido.getNombre(), recursoObtenido.getTipo());
-        this.recursosNecesitados.add(recursoAgregado);
-        this.tabla_recursos_necesarios.getItems().clear();
-        this.recursosTabla.addAll(this.recursosNecesitados);
-        this.tabla_recursos_necesarios.refresh();
+        if(this.recursosNecesitados.stream().filter(recurso ->  recurso.getNombre().equals(recursoAgregado.getNombre())).count() > 0){
+           Notificaciones.alertaError("Error Recurso", "Recurso ya se encuentra agregado");
+        }else{
+            this.recursosNecesitados.add(recursoAgregado);
+            this.tabla_recursos_necesarios.getItems().clear();
+            this.recursosTabla.addAll(this.recursosNecesitados);
+            this.tabla_recursos_necesarios.refresh();
+            Notificaciones.alertaInformacion("Bien hecho!", "Se agrego correctamente el recurso");
+        }
+
 
     }
 }

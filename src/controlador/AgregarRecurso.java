@@ -29,34 +29,40 @@ public class AgregarRecurso implements Initializable {
     }
 
     public void guardarRecurso(ActionEvent actionEvent) {
-        acumulador++;
+
         Recurso recursoAux = new Recurso(acumulador, this.field_nombre.getText(), this.field_tipo.getText());
 
         if (recursos.stream().filter(r -> r.getNombre().equals(recursoAux.getNombre())).count() == 0) {
-            //modificicar
-            if (this.recurso != null) {
-                this.recurso.setNombre(recursoAux.getNombre());
-                this.recurso.setTipo(recursoAux.getTipo());
-                this.recurso.setId(recursoAux.getId());
+            if(!recursoAux.getNombre().equals("") && !recursoAux.getTipo().equals("")){
+                //modificicar
+                if (this.recurso != null) {
+                    this.recurso.setNombre(recursoAux.getNombre());
+                    this.recurso.setTipo(recursoAux.getTipo());
+                    this.recurso.setId(recursoAux.getId());
 
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setHeaderText(null);
-                alert.setTitle("Informacion");
-                alert.setContentText("El recurso se modifico correctamente");
-                alert.showAndWait();
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setHeaderText(null);
+                    alert.setTitle("Informacion");
+                    alert.setContentText("El recurso se modifico correctamente");
+                    alert.showAndWait();
 
-            } else {
-                this.recurso = recursoAux;
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                } else {
+                    acumulador++;
+                    recursoAux.setId(acumulador);
+                    this.recurso = recursoAux;
+                    Notificaciones.alertaInformacion("Informacion", "El recurso se agrego correctamente");
+                }
+
+
+                Stage stage = (Stage) this.boton_guardar.getScene().getWindow();//para cerrar la ventana apenas se agrege la persona
+                stage.close();
+            }else{
+                Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setHeaderText(null);
-                alert.setTitle("Informacion");
-                alert.setContentText("El recurso se agrego correctamente");
+                alert.setTitle("Error");
+                alert.setContentText("Ingrese los datos del recurso");
                 alert.showAndWait();
             }
-
-
-            Stage stage = (Stage) this.boton_guardar.getScene().getWindow();//para cerrar la ventana apenas se agrege la persona
-            stage.close();
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText(null);

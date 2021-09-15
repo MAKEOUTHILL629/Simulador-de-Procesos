@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public class SistemaOperativo extends Observable implements Observer {
+public class SistemaOperativo extends Observable implements Observer, Runnable {
     private List<ProcesoTiempoEjecucion> procesosSistema;
     private List<Integer> nuevos;
     private List<Integer> listos;
@@ -126,26 +126,28 @@ public class SistemaOperativo extends Observable implements Observer {
         }
     }
 
-    public boolean terminaronLosProcesos(){
+    public boolean terminaronLosProcesos() {
         return this.procesosSistema.stream().filter(proceso -> proceso.getEstado() == Estado.TERMINADO).count() < this.procesosSistema.size();
     }
 
 
-    public List<ProcesoTiempoEjecucion> obtenerProcesosEstadoNuevo(){
+    public List<ProcesoTiempoEjecucion> obtenerProcesosEstadoNuevo() {
         return this.procesosSistema.stream().filter(proceso -> proceso.getEstado() == Estado.NUEVO).collect(Collectors.toList());
     }
 
-    public List<ProcesoTiempoEjecucion> obtenerProcesosEstadoListo(){
+    public List<ProcesoTiempoEjecucion> obtenerProcesosEstadoListo() {
         return this.procesosSistema.stream().filter(proceso -> proceso.getEstado() == Estado.LISTO).collect(Collectors.toList());
     }
-    public List<ProcesoTiempoEjecucion> obtenerProcesosEstadoEjecucion(){
+
+    public List<ProcesoTiempoEjecucion> obtenerProcesosEstadoEjecucion() {
         return this.procesosSistema.stream().filter(proceso -> proceso.getEstado() == Estado.EJECUCION).collect(Collectors.toList());
     }
-    public List<ProcesoTiempoEjecucion> obtenerProcesosEstadoTerminado(){
+
+    public List<ProcesoTiempoEjecucion> obtenerProcesosEstadoTerminado() {
         return this.procesosSistema.stream().filter(proceso -> proceso.getEstado() == Estado.TERMINADO).collect(Collectors.toList());
     }
 
-    public List<ProcesoTiempoEjecucion> obtenerProcesosEstadoBloqueado(){
+    public List<ProcesoTiempoEjecucion> obtenerProcesosEstadoBloqueado() {
         return this.procesosSistema.stream().filter(proceso -> proceso.getEstado() == Estado.BLOQUEADO).collect(Collectors.toList());
     }
 
@@ -153,7 +155,7 @@ public class SistemaOperativo extends Observable implements Observer {
     public void run() {
 
 
-        while (terminaronLosProcesos()){
+        while (terminaronLosProcesos()) {
 
             this.procesosSistema.stream().filter(proceso -> proceso.getEstado() == Estado.NUEVO).forEach(proceso -> {
 
@@ -214,7 +216,8 @@ public class SistemaOperativo extends Observable implements Observer {
 
             }
         }
-
+        this.setChanged();
+        this.notifyObservers();
 
     }
 
@@ -236,7 +239,7 @@ public class SistemaOperativo extends Observable implements Observer {
                 if (procesoTiempoEjecucion.getTamanio() < 1) {
                     procesoTiempoEjecucion.setEstado(Estado.TERMINADO);
                     this.quitarTodosLosRecursos(id);
-                    System.out.println("Se termino de ejecutar el proceso "+ id);
+                    System.out.println("Se termino de ejecutar el proceso " + id);
                 } else {
                     System.out.println("Ingreso en la validacion de que no termino el proceso " + id);
                     procesoTiempoEjecucion.descontarTiempoSistema(this.tiempoEnCpu);
@@ -244,7 +247,7 @@ public class SistemaOperativo extends Observable implements Observer {
                     if (procesoTiempoEjecucion.getTamanio() > 0) {
                         procesoTiempoEjecucion.setEstado(Estado.LISTO);
                         this.quitarRecursos(id);
-                        System.out.println("El proceso "+ id + " No termino por lo tanto pasa a cola");
+                        System.out.println("El proceso " + id + " No termino por lo tanto pasa a cola");
                     } else {
                         procesoTiempoEjecucion.setEstado(Estado.TERMINADO);
                         this.quitarTodosLosRecursos(id);

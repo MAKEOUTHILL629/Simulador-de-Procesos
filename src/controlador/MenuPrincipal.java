@@ -91,7 +91,7 @@ public class MenuPrincipal implements Initializable, Observer {
         this.col_estado_recursos.setCellValueFactory(data -> new ObservableValueBase<String>() {
             @Override
             public String getValue() {
-                return data.getValue().getIdProcesoEjecucion() > 0 ? "OCUPADO" : "DESOCUPADO";
+                return data.getValue().getIdProcesoEjecucion() > 0 ?  data.getValue().getIdProcesoEjecucion() + "" : "DESOCUPADO";
             }
         });
 
@@ -232,7 +232,7 @@ public class MenuPrincipal implements Initializable, Observer {
             Parent root = loader.load();//Esta cargando el padre
 
             AgregarProceso agregarProcesoControlador = loader.getController();
-            agregarProcesoControlador.initAtributtes(this.recursosDelSistema, FXCollections.observableArrayList(this.procesosDelSistema) );//inicializando los atributos
+            agregarProcesoControlador.initAtributtes(this.recursosDelSistema, FXCollections.observableArrayList(this.procesosDelSistema));//inicializando los atributos
             Scene scene = new Scene(root);
             Stage stage = new Stage();
 
@@ -277,29 +277,28 @@ public class MenuPrincipal implements Initializable, Observer {
             alert.showAndWait();
 
         } else {
-
-            this.sistemaOperativo.run();
-
-
+            Thread hiloSistemaOperativo = new Thread(this.sistemaOperativo);
+            hiloSistemaOperativo.start();
         }
     }
 
-    private void actualizarTablas()  {
+    private void actualizarTablas() {
         this.tabla_procesos_nuevos.getItems().clear();
         this.tabla_procesos_listos.getItems().clear();
         this.tabla_procesos_bloqueados.getItems().clear();
         this.tabla_proceso_ejecucion.getItems().clear();
         this.tabla_procesos_terminados.getItems().clear();
+        this.tabla_recursos.getItems().clear();
 
 
-
-            System.out.println("Se estan actualizando las tablas");
-            this.tabla_procesos_nuevos.getItems().addAll(this.sistemaOperativo.obtenerProcesosEstadoNuevo());
-            this.tabla_procesos_listos.getItems().addAll(this.sistemaOperativo.obtenerProcesosEstadoListo());
-            this.tabla_procesos_bloqueados.getItems().addAll(this.sistemaOperativo.obtenerProcesosEstadoBloqueado());
-            this.tabla_proceso_ejecucion.getItems().addAll(this.sistemaOperativo.obtenerProcesosEstadoEjecucion());
-            this.tabla_procesos_terminados.getItems().addAll(this.sistemaOperativo.obtenerProcesosEstadoTerminado());
-            System.out.println("Se actualizaron las tablas");
+        System.out.println("Se estan actualizando las tablas");
+        this.tabla_procesos_nuevos.getItems().addAll(this.sistemaOperativo.obtenerProcesosEstadoNuevo());
+        this.tabla_procesos_listos.getItems().addAll(this.sistemaOperativo.obtenerProcesosEstadoListo());
+        this.tabla_procesos_bloqueados.getItems().addAll(this.sistemaOperativo.obtenerProcesosEstadoBloqueado());
+        this.tabla_proceso_ejecucion.getItems().addAll(this.sistemaOperativo.obtenerProcesosEstadoEjecucion());
+        this.tabla_procesos_terminados.getItems().addAll(this.sistemaOperativo.obtenerProcesosEstadoTerminado());
+        this.tabla_recursos.getItems().addAll(this.sistemaOperativo.getRecursos());
+        System.out.println("Se actualizaron las tablas");
 
     }
 

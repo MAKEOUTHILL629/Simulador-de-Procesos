@@ -22,9 +22,6 @@ public class RecursoTiempoEjecucion extends Recurso {
 
     @Override
     public String toString() {
-        return " RecursoTiempoEjecucion { " +
-                " recurso =  " + this.getNombre() +
-                " idProceso =" + idProcesoEjecucion +
-                " } " ;
+        return super.toString();
     }
 }

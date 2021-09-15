@@ -37,10 +37,5 @@ public class Recurso {
 
     @Override
     public String toString() {
-        return "Recurso{" +
-                "id=" + id +
-                ", nombre='" + nombre + '\'' +
-                ", tipo='" + tipo + '\'' +
-                '}';
-    }
+        return this.getNombre();    }
 }
