@@ -77,19 +77,27 @@ public class SistemaOperativo extends Observable implements Observer, Runnable {
 
         procesoTiempoEjecucion.getProceso().getRecursosNecesitados().forEach(recurso -> {
             this.recursos.forEach(recursosSistema -> {
-                if (recurso.getId() == recursosSistema.getId() && recursosSistema.getIdProcesoEjecucion() == 0) {
-                    recursosSistema.setIdProcesoEjecucion(procesoTiempoEjecucion.getProceso().getId());
+                if (recurso.getId() == recursosSistema.getId() && (recursosSistema.getIdProcesoEjecucion() == 0 || recursosSistema.getIdProcesoEjecucion() == procesoTiempoEjecucion.getProceso().getId()) ) {
                     contador.getAndIncrement();
                 }
             });
         });
 
         if (contador.get() == procesoTiempoEjecucion.getProceso().getRecursosNecesitados().size()) {
+
+            procesoTiempoEjecucion.getProceso().getRecursosNecesitados().forEach(recurso -> {
+                this.recursos.forEach(recursosSistema -> {
+                    if (recurso.getId() == recursosSistema.getId()) {
+                        recursosSistema.setIdProcesoEjecucion(procesoTiempoEjecucion.getProceso().getId());
+                    }
+                });
+            });
+
             return true;
         } else {
-            this.recursos.stream()
-                    .filter(recursosSistema -> recursosSistema.getIdProcesoEjecucion() == procesoTiempoEjecucion.getProceso().getId())
-                    .forEach(recursoTiempoEjecucion -> recursoTiempoEjecucion.setIdProcesoEjecucion(0));
+//            this.recursos.stream()
+//                    .filter(recursosSistema -> recursosSistema.getIdProcesoEjecucion() == procesoTiempoEjecucion.getProceso().getId())
+//                    .forEach(recursoTiempoEjecucion -> recursoTiempoEjecucion.setIdProcesoEjecucion(0));
 
             return false;
         }
@@ -119,10 +127,10 @@ public class SistemaOperativo extends Observable implements Observer, Runnable {
     private boolean correrRandom() {
         if (Math.random() * 10 > 5) {
 
-            return true;
-        } else {
-
             return false;
+        } else {
+            return true;
+
         }
     }
 

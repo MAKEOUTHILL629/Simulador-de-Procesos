@@ -11,10 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modelo.*;
@@ -49,10 +46,12 @@ public class MenuPrincipal implements Initializable, Observer {
     public TableColumn<ProcesoTiempoEjecucion, String> col_nombres_bloqueados;
     public TableColumn<ProcesoTiempoEjecucion, String> col_id_terminados;
     public TableColumn<ProcesoTiempoEjecucion, String> col_nombre_terminados;
+    public TableColumn<ProcesoTiempoEjecucion, String> col_tiempo_terminados;
     public TableColumn<RecursoTiempoEjecucion, String> col_id_recursos;
     public TableColumn<RecursoTiempoEjecucion, String> col_nombre_recursos;
     public TableColumn<RecursoTiempoEjecucion, String> col_tipo_recursos;
     public TableColumn<RecursoTiempoEjecucion, String> col_estado_recursos;
+
     private SistemaOperativo sistemaOperativo;
 
     private List<ProcesoTiempoEjecucion> procesosDelSistema;
@@ -80,11 +79,17 @@ public class MenuPrincipal implements Initializable, Observer {
         this.procesosEjecucion = FXCollections.observableArrayList(this.sistemaOperativo.obtenerProcesosEstadoEjecucion());
 
         this.tabla_procesos_nuevos.setItems(this.procesosNuevos);
+        this.tabla_procesos_nuevos.setPlaceholder(new Label("Sin procesos nuevos"));
         this.tabla_procesos_listos.setItems(this.procesosListos);
+        this.tabla_procesos_listos.setPlaceholder(new Label("Sin procesos listos"));
         this.tabla_procesos_bloqueados.setItems(this.procesosBloqueos);
+        this.tabla_procesos_bloqueados.setPlaceholder(new Label("Sin procesos bloqueados"));
         this.tabla_proceso_ejecucion.setItems(this.procesosEjecucion);
+        this.tabla_proceso_ejecucion.setPlaceholder(new Label("Sin procesos en ejecucion"));
         this.tabla_procesos_terminados.setItems(this.procesosTerminados);
+        this.tabla_procesos_terminados.setPlaceholder(new Label("Sin procesos en finalizados"));
         this.tabla_recursos.setItems(this.recursosDelSistema);
+        this.tabla_recursos.setPlaceholder(new Label("Sin recursos"));
 
         //Asignando las variables a cada columna
 
@@ -156,6 +161,13 @@ public class MenuPrincipal implements Initializable, Observer {
                 return data.getValue().getProceso().getNombre();
             }
         });
+        this.col_tiempo_terminados.setCellValueFactory(data -> new ObservableValueBase<String>() {
+            @Override
+            public String getValue() {
+                return data.getValue().getTiempoEnElSistema() + "";
+            }
+        });
+
         this.col_nombres_bloqueados.setCellValueFactory(data -> new ObservableValueBase<String>() {
             @Override
             public String getValue() {
@@ -186,6 +198,8 @@ public class MenuPrincipal implements Initializable, Observer {
                 return data.getValue().getTipo();
             }
         });
+
+
 
     }
 
@@ -279,6 +293,9 @@ public class MenuPrincipal implements Initializable, Observer {
         } else {
             Thread hiloSistemaOperativo = new Thread(this.sistemaOperativo);
             hiloSistemaOperativo.start();
+            this.boton_agregar_proceso.setDisable(true);
+            this.boton_agregar_recurso.setDisable(true);
+            this.boton_iniciar_simulacion.setDisable(true);
         }
     }
 
