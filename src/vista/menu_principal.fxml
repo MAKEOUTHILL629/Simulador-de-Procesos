@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="698.0" prefWidth="1115.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controlador.MenuPrincipal">
+<AnchorPane prefHeight="698.0" prefWidth="1115.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controlador.MenuPrincipal">
    <children>
-      <TabPane prefHeight="698.0" prefWidth="1115.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane prefHeight="698.0" prefWidth="1115.0" style="-fx-background-color: #F7F9F9;" tabClosingPolicy="UNAVAILABLE">
         <tabs>
-          <Tab text="Simulacion">
+          <Tab style="-fx-font-size: 20; -fx-font-family: Candara; -fx-text-fill: #FDFEFE;" text="Simulacion">
                <content>
                   <HBox>
                      <children>
@@ -24,12 +31,12 @@
                                     <Cursor fx:constant="DEFAULT" />
                                  </cursor>
                               </TableView>
-                              <Label layoutX="26.0" layoutY="22.0" lineSpacing="0.5" style="-fx-font-weight: bolder;" text="PROCESOS NUEVOS">
+                              <Label layoutX="66.0" layoutY="29.0" lineSpacing="0.5" style="-fx-font-weight: bolder;" styleClass="title" text="NUEVOS">
                                  <font>
                                     <Font size="18.0" />
                                  </font>
                               </Label>
-                              <Button fx:id="boton_agregar_proceso" layoutX="53.0" layoutY="607.0" mnemonicParsing="false" onAction="#agregarProceso" text="Añadir un proceso" />
+                              <Button fx:id="boton_agregar_proceso" layoutX="40.0" layoutY="607.0" mnemonicParsing="false" onAction="#agregarProceso" style="-fx-font-family: Candara;" text="Añadir un proceso" />
                            </children>
                         </Pane>
                         <Pane prefHeight="669.0" prefWidth="220.0">
@@ -41,7 +48,7 @@
                                     <TableColumn fx:id="col_tamanio_listos" prefWidth="112.0" text="Tamaño " />
                                 </columns>
                               </TableView>
-                              <Label layoutX="32.0" layoutY="25.0" lineSpacing="0.5" style="-fx-font-weight: bolder;" text="PROCESOS LISTOS">
+                              <Label layoutX="74.0" layoutY="31.0" lineSpacing="0.5" style="-fx-font-weight: bolder;" styleClass="title" text="LISTOS">
                                  <font>
                                     <Font size="18.0" />
                                  </font>
@@ -57,12 +64,12 @@
                                     <TableColumn fx:id="col_tamanio_ejecucion" prefWidth="67.0" text="Tamaño " />
                                 </columns>
                               </TableView>
-                              <Label layoutX="5.0" layoutY="25.0" lineSpacing="0.5" style="-fx-font-weight: bolder;" text="PROCESO EN EJECUCION">
+                              <Label layoutX="49.0" layoutY="30.0" lineSpacing="0.5" style="-fx-font-weight: bolder;" styleClass="title" text=" EJECUCION">
                                  <font>
                                     <Font size="18.0" />
                                  </font>
                               </Label>
-                              <Label layoutX="2.0" layoutY="213.0" lineSpacing="0.5" style="-fx-font-weight: bolder;" text="PROCESOS BLOQUEADOS">
+                              <Label layoutX="34.0" layoutY="213.0" lineSpacing="0.5" style="-fx-font-weight: bolder;" styleClass="title" text=" BLOQUEADOS">
                                  <font>
                                     <Font size="18.0" />
                                  </font>
@@ -77,7 +84,7 @@
                         </Pane>
                         <Pane prefHeight="669.0" prefWidth="220.0">
                            <children>
-                              <Label layoutX="3.0" layoutY="25.0" lineSpacing="0.5" style="-fx-font-weight: bolder;" text="PROCESOS FINALIZADOS">
+                              <Label layoutX="40.0" layoutY="29.0" lineSpacing="0.5" style="-fx-font-weight: bolder;" styleClass="title" text="FINALIZADOS">
                                  <font>
                                     <Font size="18.0" />
                                  </font>
@@ -101,19 +108,40 @@
                                     <TableColumn fx:id="col_estado_recursos" prefWidth="75.0" text="Estado" />
                                 </columns>
                               </TableView>
-                              <Button fx:id="boton_agregar_recurso" layoutX="62.0" layoutY="385.0" mnemonicParsing="false" onAction="#agregarRecurso" text="Añadir un recurso" />
-                              <Label layoutX="71.0" layoutY="23.0" lineSpacing="0.5" style="-fx-font-weight: bolder;" text="RECURSOS">
+                              <Button fx:id="boton_agregar_recurso" layoutX="49.0" layoutY="384.0" mnemonicParsing="false" onAction="#agregarRecurso" text="Añadir un recurso" />
+                              <Label layoutX="61.0" layoutY="31.0" lineSpacing="0.5" style="-fx-font-weight: bolder;" styleClass="title" text="RECURSOS">
                                  <font>
                                     <Font size="18.0" />
                                  </font>
                               </Label>
-                              <Button fx:id="boton_iniciar_simulacion" layoutX="63.0" layoutY="500.0" mnemonicParsing="false" onAction="#iniciarSimulacion" text="Iniciar Simulacion" />
+                              <Button fx:id="boton_iniciar_simulacion" layoutX="50.0" layoutY="499.0" mnemonicParsing="false" onAction="#iniciarSimulacion" text="Iniciar Simulacion" />
                            </children>
                         </Pane>
                      </children>
                   </HBox>
                </content></Tab>
-          <Tab text="Informacion" />
+          <Tab style="-fx-font-size: 20; -fx-font-family: Candara; -fx-text-fill: #FDFEFE;" text="Informacion">
+               <content>
+                  <Pane prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <Label layoutX="480.0" layoutY="27.0" lineSpacing="0.5" style="-fx-font-weight: bolder;" styleClass="title" text="ESTADISITICAS">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                        <TableView layoutX="53.0" layoutY="95.0" prefHeight="242.0" prefWidth="686.0">
+                          <columns>
+                            <TableColumn prefWidth="75.0" text="ID" />
+                            <TableColumn prefWidth="75.0" text="NOMBRE" />
+                              <TableColumn prefWidth="124.0" text="TAMAÑO INICIAL" />
+                              <TableColumn prefWidth="75.0" text="ESTADO" />
+                              <TableColumn prefWidth="160.0" text="TAMAÑO ACTUAL" />
+                              <TableColumn prefWidth="176.0" text="TIEMPO EN EL SISTEMA" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </Pane>
+               </content></Tab>
         </tabs>
       </TabPane>
    </children>

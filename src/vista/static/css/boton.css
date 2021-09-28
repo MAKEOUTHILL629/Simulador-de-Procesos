@@ -1,0 +1,22 @@
+
+.button{
+    -fx-font-weight: bolder;
+    -fx-font-size: 16px;
+    -fx-font-family: Candara;
+    -fx-background-color: #4A8FE7  ;
+    -fx-text-fill: #FDFEFE ;
+    -fx-border-color: #5DADE2 ;
+    -fx-border-radius: 8;
+    -fx-padding: 3 6 6 6;
+}
+
+.button:hover{
+    -fx-font-weight: bolder;
+    -fx-font-size: 16px;
+    -fx-font-family: Candara;
+    -fx-background-color: #2ECC71  ;
+    -fx-text-fill: #FDFEFE ;
+    -fx-border-color: #52BE80;
+    -fx-border-radius: 8;
+    -fx-padding: 3 6 6 6;
+}

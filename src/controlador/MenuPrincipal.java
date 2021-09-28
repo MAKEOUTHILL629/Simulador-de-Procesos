@@ -252,6 +252,7 @@ public class MenuPrincipal implements Initializable, Observer {
 
             stage.initModality(Modality.APPLICATION_MODAL);//Cuando yo abra no me deja volver a la ventana anterior
             stage.setScene(scene);
+            scene.getStylesheets().add("vista/static/css/table_view.css");
             stage.showAndWait();
 
 
