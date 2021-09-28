@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="698.0" prefWidth="1115.0" xmlns="http://javafx.com/javafx/8.0.251" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controlador.MenuPrincipal">
+<AnchorPane prefHeight="698.0" prefWidth="1115.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controlador.MenuPrincipal">
    <children>
       <TabPane prefHeight="698.0" prefWidth="1115.0" style="-fx-background-color: #F7F9F9;" tabClosingPolicy="UNAVAILABLE">
         <tabs>
@@ -113,7 +120,37 @@
                      </children>
                   </HBox>
                </content></Tab>
-          <Tab style="-fx-font-size: 20; -fx-font-family: Candara; -fx-text-fill: #FDFEFE;" text="Informacion" />
+          <Tab style="-fx-font-size: 20; -fx-font-family: Candara; -fx-text-fill: #FDFEFE;" text="Informacion">
+               <content>
+                  <Pane prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <Label layoutX="480.0" layoutY="27.0" lineSpacing="0.5" style="-fx-font-weight: bolder;" styleClass="title" text="ESTADISITICAS">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                        <TableView fx:id="tabla_procesos_generales" layoutX="53.0" layoutY="95.0" prefHeight="242.0" prefWidth="1003.0">
+                          <columns>
+                            <TableColumn fx:id="col_id_general" prefWidth="75.0" text="ID" />
+                            <TableColumn fx:id="col_nombre_general" prefWidth="75.0" text="NOMBRE" />
+                              <TableColumn fx:id="col_tamanio_inicial_general" prefWidth="112.0" text="TAMAÑO INICIAL" />
+                              <TableColumn fx:id="col_estado_general" prefWidth="87.0" text="ESTADO" />
+                              <TableColumn fx:id="col_tamanio_actual_general" prefWidth="160.0" text="TAMAÑO ACTUAL" />
+                              <TableColumn fx:id="col_tiempo_sistema_general" prefWidth="141.0" text="TIEMPO EN EL SISTEMA" />
+                              <TableColumn fx:id="col_recursos_general" prefWidth="352.0" text="RECURSOS NECESITADOS" />
+                          </columns>
+                        </TableView>
+                        <Label layoutX="84.0" layoutY="387.0" style="-fx-font-family: Candara; -fx-font-style: italic; -fx-font-size: 16;" text="Cantidad de procesos" />
+                        <Label fx:id="label_cantidad_procesos" layoutX="238.0" layoutY="389.0" prefHeight="17.0" prefWidth="139.0" style="-fx-font-family: Candara; -fx-font-size: 12;" />
+                        <Label layoutX="84.0" layoutY="426.0" prefHeight="20.0" prefWidth="237.0" style="-fx-font-family: Candara; -fx-font-style: italic; -fx-font-size: 16;" text="Promedio de tiempo de los procesos" />
+                        <Label fx:id="label_promedio_procesos" layoutX="335.0" layoutY="428.0" prefHeight="17.0" prefWidth="105.0" style="-fx-font-family: Candara; -fx-font-size: 12;" />
+                        <Label layoutX="84.0" layoutY="463.0" style="-fx-font-family: Candara; -fx-font-style: italic; -fx-font-size: 16;" text="Tiempo ocupado de cpu" />
+                        <Label fx:id="label_tiempo_cpu" layoutX="248.0" layoutY="465.0" prefHeight="17.0" prefWidth="118.0" style="-fx-font-family: Candara; -fx-font-size: 12;" />
+                        <Label layoutX="84.0" layoutY="508.0" prefHeight="17.0" prefWidth="149.0" style="-fx-font-family: Candara; -fx-font-style: italic; -fx-font-size: 16;" text="Tiempo total bloqueos" />
+                        <Label fx:id="label_tiempo_bloqueados" layoutX="243.0" layoutY="510.0" prefHeight="17.0" prefWidth="128.0" style="-fx-font-family: Candara; -fx-font-size: 12;" />
+                     </children>
+                  </Pane>
+               </content></Tab>
         </tabs>
       </TabPane>
    </children>

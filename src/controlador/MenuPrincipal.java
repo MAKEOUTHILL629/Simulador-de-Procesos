@@ -1,6 +1,7 @@
 package controlador;
 
 import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
+import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.ObservableValueBase;
@@ -52,6 +53,22 @@ public class MenuPrincipal implements Initializable, Observer {
     public TableColumn<RecursoTiempoEjecucion, String> col_tipo_recursos;
     public TableColumn<RecursoTiempoEjecucion, String> col_estado_recursos;
 
+
+    //Segunda pestania
+    public TableView<ProcesoTiempoEjecucion> tabla_procesos_generales;
+    public TableColumn<ProcesoTiempoEjecucion, String> col_id_general;
+    public TableColumn<ProcesoTiempoEjecucion, String> col_nombre_general;
+    public TableColumn<ProcesoTiempoEjecucion, String> col_tamanio_inicial_general;
+    public TableColumn<ProcesoTiempoEjecucion, String> col_estado_general;
+    public TableColumn<ProcesoTiempoEjecucion, String> col_tamanio_actual_general;
+    public TableColumn<ProcesoTiempoEjecucion, String> col_tiempo_sistema_general;
+    public TableColumn<ProcesoTiempoEjecucion, String> col_recursos_general;
+    public Label label_cantidad_procesos;
+    public Label label_promedio_procesos;
+    public Label label_tiempo_cpu;
+    public Label label_tiempo_bloqueados;
+
+
     private SistemaOperativo sistemaOperativo;
 
     private List<ProcesoTiempoEjecucion> procesosDelSistema;
@@ -61,6 +78,7 @@ public class MenuPrincipal implements Initializable, Observer {
     private ObservableList<ProcesoTiempoEjecucion> procesosBloqueos;
     private ObservableList<ProcesoTiempoEjecucion> procesosTerminados;
     private ObservableList<ProcesoTiempoEjecucion> procesosEjecucion;
+    private ObservableList<ProcesoTiempoEjecucion> procesosEnElSistema;
 
     private ObservableList<RecursoTiempoEjecucion> recursosDelSistema;
 
@@ -78,6 +96,8 @@ public class MenuPrincipal implements Initializable, Observer {
         this.procesosTerminados = FXCollections.observableArrayList(this.sistemaOperativo.obtenerProcesosEstadoTerminado());
         this.procesosEjecucion = FXCollections.observableArrayList(this.sistemaOperativo.obtenerProcesosEstadoEjecucion());
 
+        this.procesosEnElSistema = FXCollections.observableArrayList(this.sistemaOperativo.getProcesosSistema());
+
         this.tabla_procesos_nuevos.setItems(this.procesosNuevos);
         this.tabla_procesos_nuevos.setPlaceholder(new Label("Sin procesos nuevos"));
         this.tabla_procesos_listos.setItems(this.procesosListos);
@@ -90,13 +110,14 @@ public class MenuPrincipal implements Initializable, Observer {
         this.tabla_procesos_terminados.setPlaceholder(new Label("Sin procesos en finalizados"));
         this.tabla_recursos.setItems(this.recursosDelSistema);
         this.tabla_recursos.setPlaceholder(new Label("Sin recursos"));
-
+        this.tabla_procesos_generales.setItems(this.procesosEnElSistema);
+        this.tabla_procesos_generales.setPlaceholder(new Label("No hay procesos en el sistema"));
         //Asignando las variables a cada columna
 
         this.col_estado_recursos.setCellValueFactory(data -> new ObservableValueBase<String>() {
             @Override
             public String getValue() {
-                return data.getValue().getIdProcesoEjecucion() > 0 ?  data.getValue().getIdProcesoEjecucion() + "" : "DESOCUPADO";
+                return data.getValue().getIdProcesoEjecucion() > 0 ? data.getValue().getIdProcesoEjecucion() + "" : "DESOCUPADO";
             }
         });
 
@@ -164,7 +185,7 @@ public class MenuPrincipal implements Initializable, Observer {
         this.col_tiempo_terminados.setCellValueFactory(data -> new ObservableValueBase<String>() {
             @Override
             public String getValue() {
-                return data.getValue().getTiempoEnElSistema() + "";
+                return (data.getValue().getTiempoSistiempoSistem() / 1000) + "segundos";
             }
         });
 
@@ -200,6 +221,54 @@ public class MenuPrincipal implements Initializable, Observer {
         });
 
 
+        this.col_id_general.setCellValueFactory(data -> new ObservableValueBase<String>() {
+            @Override
+            public String getValue() {
+                return data.getValue().getProceso().getId() + " ";
+            }
+        });
+
+        this.col_nombre_general.setCellValueFactory(data -> new ObservableValueBase<String>() {
+            @Override
+            public String getValue() {
+                return data.getValue().getProceso().getNombre();
+            }
+        });
+
+        this.col_tamanio_inicial_general.setCellValueFactory(data -> new ObservableValueBase<String>() {
+            @Override
+            public String getValue() {
+                return data.getValue().getProceso().getTamanio() + "";
+            }
+        });
+
+        this.col_estado_general.setCellValueFactory(data -> new ObservableValueBase<String>() {
+            @Override
+            public String getValue() {
+                return data.getValue().getEstado() + "";
+            }
+        });
+
+        this.col_tamanio_actual_general.setCellValueFactory(data -> new ObservableValueBase<String>() {
+            @Override
+            public String getValue() {
+                return data.getValue().getTamanio() < 0 ? 0 + "" : data.getValue().getTamanio() + "";
+            }
+        });
+
+        this.col_tiempo_sistema_general.setCellValueFactory(data -> new ObservableValueBase<String>() {
+            @Override
+            public String getValue() {
+                return (data.getValue().getTiempoSistiempoSistem() / 1000) + " segundos";
+            }
+        });
+
+        this.col_recursos_general.setCellValueFactory(data -> new ObservableValueBase<String>() {
+            @Override
+            public String getValue() {
+                return data.getValue().getProceso().getRecursosNecesitados("");
+            }
+        });
 
     }
 
@@ -307,6 +376,7 @@ public class MenuPrincipal implements Initializable, Observer {
         this.tabla_proceso_ejecucion.getItems().clear();
         this.tabla_procesos_terminados.getItems().clear();
         this.tabla_recursos.getItems().clear();
+        this.tabla_procesos_generales.getItems().clear();
 
 
         System.out.println("Se estan actualizando las tablas");
@@ -316,7 +386,21 @@ public class MenuPrincipal implements Initializable, Observer {
         this.tabla_proceso_ejecucion.getItems().addAll(this.sistemaOperativo.obtenerProcesosEstadoEjecucion());
         this.tabla_procesos_terminados.getItems().addAll(this.sistemaOperativo.obtenerProcesosEstadoTerminado());
         this.tabla_recursos.getItems().addAll(this.sistemaOperativo.getRecursos());
+        this.tabla_procesos_generales.getItems().addAll(this.sistemaOperativo.getProcesosSistema());
         System.out.println("Se actualizaron las tablas");
+
+
+        if (!this.sistemaOperativo.terminaronLosProcesos()) {
+
+            Platform.runLater(() -> {
+
+                this.label_cantidad_procesos.setText(this.sistemaOperativo.getProcesosSistema().size() + "");
+                this.label_promedio_procesos.setText((this.sistemaOperativo.getTiempoPromedioProcesos() / 1000)+ " segundos");
+                this.label_tiempo_bloqueados.setText(this.sistemaOperativo.getTiempoBloqueado() + " segundos");
+                this.label_tiempo_cpu.setText(this.sistemaOperativo.getTiempoCPUOcupado() + " segundos");
+            });
+
+        }
 
     }
 

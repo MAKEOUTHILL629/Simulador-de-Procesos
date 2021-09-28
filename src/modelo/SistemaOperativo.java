@@ -12,6 +12,8 @@ public class SistemaOperativo extends Observable implements Observer, Runnable {
     private List<Bloqueo> bloqueados;
     private List<RecursoTiempoEjecucion> recursos;
     private Long tiempoCPUOcupado;
+    private Long tiempoPromedioProcesos;
+    private Long tiempoBloqueado;
     private final Long tiempoEnCpu = Long.valueOf(3);
     private final Long tiempoEnBloqueado = Long.valueOf(3);
     private Thread hiloCpu;
@@ -36,7 +38,7 @@ public class SistemaOperativo extends Observable implements Observer, Runnable {
         this.listos = new ArrayList<>();
         this.bloqueados = new ArrayList<>();
         this.procesosSistema = new ArrayList<>();
-
+        this.tiempoBloqueado = 0l;
         this.cpu = new CPU(tiempoEnCpu * 1000);
         cpu.addObserver(this);
         this.hiloCpu = new Thread(this.cpu, "Cpu");
@@ -66,6 +68,7 @@ public class SistemaOperativo extends Observable implements Observer, Runnable {
         ProcesoTiempoEjecucion proceso = this.obtenerProceso(id);
 
         proceso.setEstado(Estado.LISTO);
+        proceso.setTiempoInicio();
 
         this.listos.add(proceso.getProceso().getId());
     }
@@ -77,7 +80,7 @@ public class SistemaOperativo extends Observable implements Observer, Runnable {
 
         procesoTiempoEjecucion.getProceso().getRecursosNecesitados().forEach(recurso -> {
             this.recursos.forEach(recursosSistema -> {
-                if (recurso.getId() == recursosSistema.getId() && (recursosSistema.getIdProcesoEjecucion() == 0 || recursosSistema.getIdProcesoEjecucion() == procesoTiempoEjecucion.getProceso().getId()) ) {
+                if (recurso.getId() == recursosSistema.getId() && (recursosSistema.getIdProcesoEjecucion() == 0 || recursosSistema.getIdProcesoEjecucion() == procesoTiempoEjecucion.getProceso().getId())) {
                     contador.getAndIncrement();
                 }
             });
@@ -162,7 +165,7 @@ public class SistemaOperativo extends Observable implements Observer, Runnable {
 
     public void run() {
 
-
+        long tiempoOcupado = System.currentTimeMillis();
         while (terminaronLosProcesos()) {
 
             this.procesosSistema.stream().filter(proceso -> proceso.getEstado() == Estado.NUEVO).forEach(proceso -> {
@@ -224,9 +227,36 @@ public class SistemaOperativo extends Observable implements Observer, Runnable {
 
             }
         }
+        this.tiempoCPUOcupado = (System.currentTimeMillis() - tiempoOcupado) / 1000;
         this.setChanged();
         this.notifyObservers();
 
+    }
+
+    private void calcularTiempoPromedio() {
+        AtomicInteger acumulador = new AtomicInteger();
+        AtomicInteger cantidad = new AtomicInteger();
+        this.procesosSistema.forEach(proceso -> {
+            if (proceso.getEstado() == Estado.TERMINADO) {
+                acumulador.addAndGet(Math.toIntExact(proceso.getTiempoSistiempoSistem()));
+                cantidad.getAndIncrement();
+            }
+        });
+
+        this.tiempoPromedioProcesos = Long.valueOf(acumulador.get() / cantidad.get());
+    }
+
+
+    public Long getTiempoBloqueado() {
+        return tiempoBloqueado;
+    }
+
+    public Long getTiempoCPUOcupado() {
+        return tiempoCPUOcupado;
+    }
+
+    public Long getTiempoPromedioProcesos() {
+        return tiempoPromedioProcesos;
     }
 
     @Override
@@ -235,17 +265,20 @@ public class SistemaOperativo extends Observable implements Observer, Runnable {
         ProcesoTiempoEjecucion procesoTiempoEjecucion = this.obtenerProceso(id);
         switch (procesoTiempoEjecucion.getEstado()) {
             case BLOQUEADO:
+
                 procesoTiempoEjecucion.setEstado(Estado.LISTO);
                 procesoTiempoEjecucion.aniadirTiempoSistema(this.tiempoEnCpu);
 
                 //this.bloqueados.remove(this.bloqueados.indexOf(new Bloqueo(id, this.tiempoEnBloqueado)) == -1 ? 0 : this.bloqueados.indexOf(new Bloqueo(id, this.tiempoEnBloqueado)));
                 this.bloqueados.remove(new Bloqueo(id, this.tiempoEnBloqueado));
-
+                this.tiempoBloqueado += this.tiempoEnBloqueado;
                 break;
             case EJECUCION:
                 System.out.println("Se esta validando que el proceso paso por ejecucion " + id);
                 if (procesoTiempoEjecucion.getTamanio() < 1) {
                     procesoTiempoEjecucion.setEstado(Estado.TERMINADO);
+                    calcularTiempoPromedio();
+                    procesoTiempoEjecucion.setTiempoFinal();
                     this.quitarTodosLosRecursos(id);
                     System.out.println("Se termino de ejecutar el proceso " + id);
                 } else {
@@ -258,6 +291,8 @@ public class SistemaOperativo extends Observable implements Observer, Runnable {
                         System.out.println("El proceso " + id + " No termino por lo tanto pasa a cola");
                     } else {
                         procesoTiempoEjecucion.setEstado(Estado.TERMINADO);
+                        calcularTiempoPromedio();
+                        procesoTiempoEjecucion.setTiempoFinal();
                         this.quitarTodosLosRecursos(id);
                         System.out.println("El proceso termino en esta ultima ejecucion " + id);
                         this.cpu.setIdProcesoEjecucion(0);

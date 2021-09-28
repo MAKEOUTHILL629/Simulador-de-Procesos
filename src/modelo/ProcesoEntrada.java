@@ -19,6 +19,8 @@ public class ProcesoEntrada {
         this.recursosNecesitados = recursosNecesitados;
     }
 
+
+
     public ProcesoEntrada(int id, String nombre, long tamanio, List<Recurso> recursosNecesitados) {
         this.id = id;
         this.nombre = nombre;
@@ -80,6 +82,14 @@ public class ProcesoEntrada {
 
     public List<Recurso> getRecursosNecesitados() {
         return recursosNecesitados;
+    }
+
+    public String getRecursosNecesitados(String s) {
+        String recursos = "";
+        for(Recurso re : this.recursosNecesitados){
+            recursos += re.getNombre() + ", ";
+        }
+        return recursos.substring(0, recursos.length() -2);
     }
 
     public void setRecursosNecesitados(List<Recurso> recursosNecesitados) {

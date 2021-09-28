@@ -5,12 +5,16 @@ public class ProcesoTiempoEjecucion {
     private Estado estado;
     private Long tamanio;
     private Long tiempoEnElSistema;
+    private Long tiempoInicio;
+    private Long tiempoFinal;
 
     public ProcesoTiempoEjecucion(ProcesoEntrada proceso) {
         this.proceso = proceso;
         this.tamanio = proceso.getTamanio();
         this.tiempoEnElSistema = 0l;
         this.estado = Estado.NUEVO;
+        this.tiempoInicio = 0l;
+        this.tiempoFinal = 0l;
     }
 
     public ProcesoEntrada getProceso() {
@@ -43,6 +47,21 @@ public class ProcesoTiempoEjecucion {
 
     public void descontarTiempoSistema(Long tiempoCPU) {
         this.tamanio -= tiempoCPU;
+    }
+    public void setTiempoInicio(){
+
+        if(this.tiempoInicio == 0){
+            this.tiempoInicio = System.currentTimeMillis();
+        }
+
+    }
+
+    public void setTiempoFinal(){
+        this.tiempoFinal =  System.currentTimeMillis();
+    }
+
+    public Long getTiempoSistiempoSistem(){
+        return this.tiempoFinal == 0 ?  System.currentTimeMillis() - this.tiempoInicio : this.tiempoFinal - this.tiempoInicio;
     }
 
     public void aniadirTiempoSistema(Long tiempoEnElSistema) {

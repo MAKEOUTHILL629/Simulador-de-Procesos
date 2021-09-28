@@ -129,16 +129,25 @@
                               <Font size="18.0" />
                            </font>
                         </Label>
-                        <TableView layoutX="53.0" layoutY="95.0" prefHeight="242.0" prefWidth="686.0">
+                        <TableView fx:id="tabla_procesos_generales" layoutX="53.0" layoutY="95.0" prefHeight="242.0" prefWidth="1003.0">
                           <columns>
-                            <TableColumn prefWidth="75.0" text="ID" />
-                            <TableColumn prefWidth="75.0" text="NOMBRE" />
-                              <TableColumn prefWidth="124.0" text="TAMAÑO INICIAL" />
-                              <TableColumn prefWidth="75.0" text="ESTADO" />
-                              <TableColumn prefWidth="160.0" text="TAMAÑO ACTUAL" />
-                              <TableColumn prefWidth="176.0" text="TIEMPO EN EL SISTEMA" />
+                            <TableColumn fx:id="col_id_general" prefWidth="75.0" text="ID" />
+                            <TableColumn fx:id="col_nombre_general" prefWidth="75.0" text="NOMBRE" />
+                              <TableColumn fx:id="col_tamanio_inicial_general" prefWidth="112.0" text="TAMAÑO INICIAL" />
+                              <TableColumn fx:id="col_estado_general" prefWidth="87.0" text="ESTADO" />
+                              <TableColumn fx:id="col_tamanio_actual_general" prefWidth="160.0" text="TAMAÑO ACTUAL" />
+                              <TableColumn fx:id="col_tiempo_sistema_general" prefWidth="141.0" text="TIEMPO EN EL SISTEMA" />
+                              <TableColumn fx:id="col_recursos_general" prefWidth="352.0" text="RECURSOS NECESITADOS" />
                           </columns>
                         </TableView>
+                        <Label layoutX="84.0" layoutY="387.0" style="-fx-font-family: Candara; -fx-font-style: italic; -fx-font-size: 16;" text="Cantidad de procesos" />
+                        <Label fx:id="label_cantidad_procesos" layoutX="238.0" layoutY="389.0" prefHeight="17.0" prefWidth="139.0" style="-fx-font-family: Candara; -fx-font-size: 12;" />
+                        <Label layoutX="84.0" layoutY="426.0" prefHeight="20.0" prefWidth="237.0" style="-fx-font-family: Candara; -fx-font-style: italic; -fx-font-size: 16;" text="Promedio de tiempo de los procesos" />
+                        <Label fx:id="label_promedio_procesos" layoutX="335.0" layoutY="428.0" prefHeight="17.0" prefWidth="105.0" style="-fx-font-family: Candara; -fx-font-size: 12;" />
+                        <Label layoutX="84.0" layoutY="463.0" style="-fx-font-family: Candara; -fx-font-style: italic; -fx-font-size: 16;" text="Tiempo ocupado de cpu" />
+                        <Label fx:id="label_tiempo_cpu" layoutX="248.0" layoutY="465.0" prefHeight="17.0" prefWidth="118.0" style="-fx-font-family: Candara; -fx-font-size: 12;" />
+                        <Label layoutX="84.0" layoutY="508.0" prefHeight="17.0" prefWidth="149.0" style="-fx-font-family: Candara; -fx-font-style: italic; -fx-font-size: 16;" text="Tiempo total bloqueos" />
+                        <Label fx:id="label_tiempo_bloqueados" layoutX="243.0" layoutY="510.0" prefHeight="17.0" prefWidth="128.0" style="-fx-font-family: Candara; -fx-font-size: 12;" />
                      </children>
                   </Pane>
                </content></Tab>
